@@ -15,7 +15,7 @@ def jet_dwh():
     def git_sync():
         return f"""
         if [ -d {dbt_dir}/.git ]; then
-            cd {dbt_dir} && git fetch && git reset --hard origin/dev
+            cd {dbt_dir} && git fetch && git reset --hard origin/main
         else 
             git clone {git_repo} {dbt_dir}
         fi
