@@ -1,6 +1,6 @@
 # JET case study
 
-As part of this case study, I designed and implemented a data pipeline that integrates data from the XKCD Comics API, models it for analytics, and exposes it after applying business transformations. 
+As part of this case study, I designed and implemented a data pipeline that integrates data from the [XKCD Comics API](https://xkcd.com/json.html), models it for analytics, and exposes it after applying business transformations. 
 The pipeline leverages Apache **Airflow** for data integration and orchestration, and **dbt** for data modelling, transformation, and testing. And PostgreSQL as the data warehouse. 
 
 This repository holds Airlow dags to integrate data on a schedule and dag to execute dbt models which models and transforms data. 
