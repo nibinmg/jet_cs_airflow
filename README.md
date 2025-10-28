@@ -61,6 +61,8 @@ Follow these steps to set up the Airflow for the first time:
      docker compose up -d
      ```
 
+Wait till the containers are up. Once up the dags can be viewed from the [Airflow UI](http://localhost:8080/) (username: airflow, password: airflow). 
+
 4. **Other Airflow commands**
      
      Stop the airflow
@@ -90,10 +92,22 @@ Follow these steps to set up the Airflow for the first time:
 
 ## Lets run the DAGs
 
-there are 3 dags. 
-     **1. jet_xkcd_daily **
+This project includes three Airflow DAGs, each responsible for a specific stage of the pipeline:
 
+1. **jet_xkcd_daily**
 
-     **2. jet_dwh**
+This DAG is scheduled to extract data from the XKCD API every Monday, Wednesday, and Friday.
+The job starts at 6:00 AM and checks for new comics every 10 minutes for the next 6 hours.
 
-     **3.jet_xkcd**
+It also supports historical data extraction, although performance is limited in the local setup.
+To avoid long runtimes, the historical fetch is restricted to max two records at a run.
+
+2. **jet_dwh**
+
+Once data is extracted, this DAG is triggered to model, transform, and load the data into the data warehouse (PostgreSQL).
+It includes tasks that sync the dbt repository into the Airflow runtime environment and execute the dbt models for transformation.
+
+3. **jet_xkcd**
+
+This is an auxiliary DAG created specifically for historical data extraction.
+Since *jet_xkcd_daily* is optimized for scheduled incremental loads and faces performance limitations in local environments, this job handles larger historical loads separately. 
