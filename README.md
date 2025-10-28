@@ -8,16 +8,20 @@ The pipeline leverages Apache **Airflow** for data integration and orchestration
 
 ![technical overview](images/overview.png)
 
+The data modelling and transformation logic, implemented using dbt, is maintained in a separate GitHub repository [jet_cs_dbt](https://github.com/nibinmg/jet_cs_dbt.git). During each Airflow DAG run, a dedicated task synchronizes the dbt repository into the Airflow runtime environment and executes the defined dbt models.
+
 ---
 ## Prerequisites
 
 Make sure you have the following installed:
 
+- Python
+
 - [PostgreSQL](https://www.postgresql.org/download/) 
 
      (since the data warehouse is setup in PostgreSQL. Airflow will also install postgres for maintaining metadata. This outside the docker container)
 
-- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) 
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) 
 
      (includes Docker and Docker Compose)
 - Ensure Docker Desktop is running before using any `docker compose` commands
