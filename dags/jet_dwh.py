@@ -29,12 +29,12 @@ def run_dbt_models():
     def dbt_deps():
         return f"cd {dbt_dir} && dbt deps"
     
-    # @task.bash
-    # def dbt_seed():
-    #     return f"cd {dbt_dir} && dbt seed --profiles-dir {dbt_dir}"
+    @task.bash
+    def dbt_build():
+        return f"cd {dbt_dir} && dbt build --profiles-dir {dbt_dir}"
 
 
 
-    start_task() >> git_sync() >> dbt_debug() >> dbt_deps() ##>> dbt_seed()
+    start_task() >> git_sync() >> dbt_debug() >> dbt_deps() >> dbt_build()
 
 run_dbt_models()
