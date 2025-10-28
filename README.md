@@ -29,25 +29,30 @@ Follow these steps to set up the project for the first time:
 2. **Build docker image**
      ```bash
      docker compose build
+     ```
 
 3. **Initialize Airflow database**
      ```bash
      docker compose up airflow-init
+     ```
 
 4. **Start Airflow services**
     to run the in foreground
      ```bash
      docker compose up 
-
+     ```
      to run the in background
      ```bash
      docker compose up -d
+     ```
 
 4. **Other Airflow commands**
      Stop the airflow
      ```bash
      docker compose down 
+     ```
 
      Stop and remove the volumes
      ```bash
      docker compose down -v
+     ```
