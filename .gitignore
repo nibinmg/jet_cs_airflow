@@ -2,7 +2,7 @@
 logs/
 
 # Environment & OS
-*.env
+.env
 .venv/
 venv/
 
