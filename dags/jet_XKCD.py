@@ -28,7 +28,7 @@ def extract_data(latest_number):
     return xkcd_data
 
 def last_success_num():
-    hook = PostgresHook(postgres_conn_id="postgres_local")
+    hook = PostgresHook(postgres_conn_id="dwh_postgres")
     sql="""
             CREATE TABLE IF NOT EXISTS raw.xkcd_data (
             num INTEGER PRIMARY KEY,
@@ -63,7 +63,7 @@ def load_data(xkcd_data):
     if xkcd_data is None:
         print("No comic data returned")
     else:
-        hook = PostgresHook(postgres_conn_id="postgres_local")
+        hook = PostgresHook(postgres_conn_id="dwh_postgres")
         sql="""
             INSERT INTO raw.xkcd_data (num,day,month,year,title,safe_title,transcript,alt,link,news,img,load_ts)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -86,7 +86,7 @@ def load_data(xkcd_data):
         hook.run(sql, parameters=values)
 
 @dag
-def jet_XKCD():
+def jet_xkcd():
 
     @task
     def start_task():
@@ -131,4 +131,4 @@ def jet_XKCD():
 
     start_task() >> is_api_available() >> extract_load_data() >> end_task()
 
-jet_XKCD()
+jet_xkcd()

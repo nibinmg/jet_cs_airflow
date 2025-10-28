@@ -23,7 +23,7 @@ Make sure you have the following installed:
 
 ## Getting Started with Airflow
 
-Follow these steps to set up the project for the first time:
+Follow these steps to set up the Airflow for the first time:
 
 1. **Clone the repository**
    ```bash
@@ -62,3 +62,18 @@ Follow these steps to set up the project for the first time:
      ```bash
      docker compose down -v
      ```
+## Setup DWH(Postgres)
+
+     In the postgres, create database "jet_db"
+
+## Add connection to DWH(Postgres) in Airflow 
+
+     From Airflow UI, Admin -> Connection
+     Add connection. 
+
+     Connection name: "dwh_postgres"
+     connection type: select postgres
+     host: "host.docker.internal" or <IP>
+     user: <postgres user name>
+     password: <postgres pwd>
+     database: "jet_db"
