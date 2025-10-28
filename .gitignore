@@ -1,0 +1,13 @@
+
+logs/
+
+# Environment & OS
+.env
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
