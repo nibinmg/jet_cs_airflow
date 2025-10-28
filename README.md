@@ -4,6 +4,7 @@ As part of this case study, I designed and implemented a data pipeline that inte
 The pipeline leverages Apache **Airflow** for data integration and orchestration, and **dbt** for data modelling, transformation, and testing. And PostgreSQL as the data warehouse. 
 
 This repository holds Airlow dags to integrate data on a schedule and dag to execute dbt models which models and transforms data. 
+
 ---
 ## Technical overview
 
