@@ -5,7 +5,7 @@ git_repo = f"https://github.com/nibinmg/jet_cs_dbt.git"
 dbt_dir = "/opt/airflow/dbt"
 
 @dag
-def run_dbt_models():
+def jet_dwh():
     
     @task
     def start_task():
@@ -34,7 +34,6 @@ def run_dbt_models():
         return f"cd {dbt_dir} && dbt build --profiles-dir {dbt_dir}"
 
 
-
     start_task() >> git_sync() >> dbt_debug() >> dbt_deps() >> dbt_build()
 
-run_dbt_models()
+jet_dwh()
