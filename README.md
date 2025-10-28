@@ -10,14 +10,18 @@ This project uses **Apache Airflow** for workflow orchestration, and is containe
 
 Make sure you have the following installed:
 
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/)
+- [PostgreSQL](https://www.postgresql.org/download/) 
 
-- in Windows, install Docker Desktop
+     (since the data warehouse is setup in PostgreSQL. Airflow will also install postgres for maintaining metadata. This outside the docker container)
+
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) 
+
+     (includes Docker and Docker Compose)
+- Ensure Docker Desktop is running before using any `docker compose` commands
 
 ---
 
-## Getting Started
+## Getting Started with Airflow
 
 Follow these steps to set up the project for the first time:
 
@@ -37,6 +41,7 @@ Follow these steps to set up the project for the first time:
      ```
 
 4. **Start Airflow services**
+    
     to run the in foreground
      ```bash
      docker compose up 
@@ -47,6 +52,7 @@ Follow these steps to set up the project for the first time:
      ```
 
 4. **Other Airflow commands**
+     
      Stop the airflow
      ```bash
      docker compose down 

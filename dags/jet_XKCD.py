@@ -2,13 +2,13 @@ from airflow.sdk import dag, task
 from airflow.sdk.bases.sensor import PokeReturnValue
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
-import requests
 from datetime import datetime, timezone
 
-base_url = f"https://xkcd.com/"
+current_comic_url = f"https://xkcd.com/info.0.json"
 
 def get_latest_comic_number():
-    response = requests.get(f"{base_url}info.0.json")
+    import requests
+    response = requests.get(current_comic_url)
 
     if response.status_code == 200:
         xkcd_data = response.json()
@@ -18,7 +18,8 @@ def get_latest_comic_number():
     return xkcd_data['num']
 
 def extract_data(latest_number):
-    url = f"{base_url}{latest_number}/info.0.json"
+    url = f"https://xkcd.com/{latest_number}/info.0.json"
+    import requests
     response = requests.get(url)
     if response.status_code == 200:
         xkcd_data = response.json()
@@ -85,16 +86,16 @@ def load_data(xkcd_data):
         hook.run(sql, parameters=values)
 
 @dag
-def jet_XKCD_daily_v2():
+def jet_XKCD():
 
     @task
     def start_task():
         pass
 
     @task.sensor(poke_interval=30, timeout=300)
-    def is_api_available_task() -> PokeReturnValue:
-
-        response = requests.get(f"{base_url}info.0.json")
+    def is_api_available() -> PokeReturnValue:
+        import requests
+        response = requests.get(current_comic_url)
 
         if response.status_code == 200:
             condition = True
@@ -102,10 +103,10 @@ def jet_XKCD_daily_v2():
             condition = False
 
         return PokeReturnValue(is_done=condition)
-    
-    @task
-    def identify_comic_number_task():
-        
+
+    @task()
+    def extract_load_data():
+
         latest_comic_number = get_latest_comic_number()
         print(f"Latest comic number = {latest_comic_number}")
 
@@ -114,42 +115,20 @@ def jet_XKCD_daily_v2():
 
         if latest_comic_number == last_run_comic_number:
             print("No new XKCD comic data to extract")
-        elif latest_comic_number > last_run_comic_number:
-            if (latest_comic_number - last_run_comic_number) > 2:
-                list_comic_number = list(range(last_run_comic_number+1,last_run_comic_number+3))
-            else:
-                list_comic_number = list(range(last_run_comic_number+1,latest_comic_number+1))
-        
-        return list_comic_number
+        else:
+            for num in range(last_run_comic_number+1,latest_comic_number+1):
+                print(f"Extracting comic number {num}")
+                xkcd_data = extract_data(num)
 
-    @task
-    def extract_data_task(num: int):
-        
-        xkcd_data = extract_data(num)
-        return xkcd_data
-    
-    @task
-    def load_data_task(xkcd_data: dict):
-        load_data(xkcd_data)
+                print(f"Loading comic number {num}")
+                load_data(xkcd_data)
+
+                print(f"Loading completed for comic number {num}")
 
     @task 
     def end_task():
         pass
 
-    # Step 1: Define your tasks
-    start = start_task()
-    check_api = is_api_available_task()
-    identify = identify_comic_number_task()
-    extract = extract_data_task.expand(num=identify)
-    load = load_data_task.expand(xkcd_data=extract)
-    end = end_task()
+    start_task() >> is_api_available() >> extract_load_data() >> end_task()
 
-    # Step 2: Chain them properly
-    start >> check_api
-    check_api >> identify
-    identify >> extract
-    extract >> load
-    load >> end
-
-
-jet_XKCD_daily_v2()
+jet_XKCD()
