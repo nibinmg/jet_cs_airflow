@@ -3,6 +3,7 @@
 As part of this case study, I designed and implemented a data pipeline that integrates data from the XKCD Comics API, models it for analytics, and exposes it after applying business transformations. 
 The pipeline leverages Apache **Airflow** for data integration and orchestration, and **dbt** for data modelling, transformation, and testing. And PostgreSQL as the data warehouse. 
 
+This repository holds Airlow dags to integrate data on a schedule and dag to execute dbt models which models and transforms data. 
 ---
 ## Technical overview
 
@@ -19,12 +20,13 @@ Make sure you have the following installed:
 
 - [PostgreSQL](https://www.postgresql.org/download/) 
 
-     (since the data warehouse is setup in PostgreSQL. Airflow will also install postgres for maintaining metadata. This outside the docker container)
+     I chose PostgreSQL as the data warehouse for this project. To better simulate a real-world deployment, the data warehouse instance is hosted outside the Airflow container, representing an external production database.
+
+     While Airflow also uses PostgreSQL as its metadata database, that instance runs inside the Docker container and is separate from the external data warehouse used for analytical workloads.
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) 
 
-     (includes Docker and Docker Compose)
-- Ensure Docker Desktop is running before using any `docker compose` commands
+     Includes Docker and Docker Compose. Ensure Docker Desktop is running before using any `docker compose` commands. 
 
 ---
 
@@ -36,6 +38,7 @@ Follow these steps to set up the Airflow for the first time:
    ```bash
    git clone <your-repo-url>
    cd <your-repo-folder>
+   ```
 
 2. **Build docker image**
      ```bash
@@ -84,3 +87,13 @@ Follow these steps to set up the Airflow for the first time:
      user: <postgres user name>
      password: <postgres pwd>
      database: "jet_db"
+
+## Lets run the DAGs
+
+there are 3 dags. 
+     **1. jet_xkcd_daily **
+
+
+     **2. jet_dwh**
+
+     **3.jet_xkcd**
