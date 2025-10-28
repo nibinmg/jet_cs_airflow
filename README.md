@@ -1,11 +1,14 @@
 # JET case study
 
-A brief description of your project and what it does.
-
-This project uses **Apache Airflow** for workflow orchestration, and is containerized with **Docker Compose** for easy setup and development.
+As part of this case study, I designed and implemented a data pipeline that integrates data from the XKCD Comics API, models it for analytics, and exposes it after applying business transformations. 
+The pipeline leverages Apache **Airflow** for data integration and orchestration, and **dbt** for data modelling, transformation, and testing. And PostgreSQL as the data warehouse. 
 
 ---
+## Technical overview
 
+![technical overview](images/overview.png)
+
+---
 ## Prerequisites
 
 Make sure you have the following installed:
