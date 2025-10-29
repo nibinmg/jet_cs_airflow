@@ -1,11 +1,16 @@
 from airflow.sdk import dag, task
 from airflow.sdk.bases.sensor import PokeReturnValue
 from airflow.providers.postgres.hooks.postgres import PostgresHook
+from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
 
 import requests
 from datetime import datetime, timezone
 
+# Some default settings
 base_url = f"https://xkcd.com/"
+polling_timeout = 7200
+polling_interval = 300
+comic_extract_per_run = 2
 
 def get_latest_comic_number():
     response = requests.get(f"{base_url}info.0.json")
@@ -84,19 +89,28 @@ def load_data(xkcd_data):
         )
         hook.run(sql, parameters=values)
 
-@dag
+@dag(
+        dag_id="jet_xkcd_daily",
+        schedule="0 6 * * 1,3,5",
+        start_date=datetime(2025,10,28),
+        catchup=False
+)
 def jet_xkcd_daily():
 
     @task
     def start_task():
         pass
 
-    @task.sensor(poke_interval=30, timeout=300)
-    def is_api_available_task() -> PokeReturnValue:
+    @task.sensor(poke_interval=polling_interval, timeout=polling_timeout)
+    def is_comic_available_task() -> PokeReturnValue:
 
-        response = requests.get(f"{base_url}info.0.json")
+        latest_comic_number = get_latest_comic_number()
+        print(f"Latest comic number = {latest_comic_number}")
 
-        if response.status_code == 200:
+        last_run_comic_number = last_success_num()
+        print(f"Last successfully loaded comic number = {last_run_comic_number}")
+
+        if latest_comic_number and latest_comic_number > last_run_comic_number:
             condition = True
         else:
             condition = False
@@ -115,8 +129,8 @@ def jet_xkcd_daily():
         if latest_comic_number == last_run_comic_number:
             print("No new XKCD comic data to extract")
         elif latest_comic_number > last_run_comic_number:
-            if (latest_comic_number - last_run_comic_number) > 2:
-                list_comic_number = list(range(last_run_comic_number+1,last_run_comic_number+3))
+            if (latest_comic_number - last_run_comic_number) > comic_extract_per_run:
+                list_comic_number = list(range(last_run_comic_number+1,last_run_comic_number+comic_extract_per_run+1))
             else:
                 list_comic_number = list(range(last_run_comic_number+1,latest_comic_number+1))
         
@@ -132,13 +146,18 @@ def jet_xkcd_daily():
     def load_data_task(xkcd_data: dict):
         load_data(xkcd_data)
 
+    trigger_dwh_dag = TriggerDagRunOperator(
+        task_id = "trigger_dwh_dag",
+        trigger_dag_id = "jet_dwh"
+    )
+    
     @task 
     def end_task():
         pass
 
     # Step 1: Define your tasks
     start = start_task()
-    check_api = is_api_available_task()
+    check_api = is_comic_available_task()
     identify = identify_comic_number_task()
     extract = extract_data_task.expand(num=identify)
     load = load_data_task.expand(xkcd_data=extract)
@@ -149,7 +168,8 @@ def jet_xkcd_daily():
     check_api >> identify
     identify >> extract
     extract >> load
-    load >> end
+    load >> trigger_dwh_dag
+    trigger_dwh_dag >> end
 
 
 jet_xkcd_daily()
