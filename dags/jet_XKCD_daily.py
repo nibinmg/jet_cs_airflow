@@ -8,8 +8,8 @@ from datetime import datetime, timezone
 
 # Some default settings
 base_url = f"https://xkcd.com/"
-polling_timeout = 7200
-polling_interval = 300
+polling_timeout = 300
+polling_interval = 60
 comic_extract_per_run = 2
 
 def get_latest_comic_number():
@@ -105,15 +105,14 @@ def jet_xkcd_daily():
     def is_comic_available_task() -> PokeReturnValue:
 
         latest_comic_number = get_latest_comic_number()
-        print(f"Latest comic number = {latest_comic_number}")
 
         last_run_comic_number = last_success_num()
-        print(f"Last successfully loaded comic number = {last_run_comic_number}")
 
         if latest_comic_number and latest_comic_number > last_run_comic_number:
             condition = True
         else:
             condition = False
+            print(f"No new comics available. Last successfully loaded comic number = {last_run_comic_number} and Latest comic number = {latest_comic_number} ")
 
         return PokeReturnValue(is_done=condition)
     
@@ -150,7 +149,7 @@ def jet_xkcd_daily():
         task_id = "trigger_dwh_dag",
         trigger_dag_id = "jet_dwh"
     )
-    
+
     @task 
     def end_task():
         pass
