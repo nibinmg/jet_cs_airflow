@@ -121,19 +121,19 @@ To avoid long runtimes, the historical fetch is restricted to max two records at
 Following variable in the dag can be updated:
 
      How should the job check for new comic before failure
-     ```bash
+     
      polling_timeout = 7200
-     ```
+     
 
      At what interval job check for new comic
-     ```bash
+     
      polling_interval = 300
-     ```
+     
 
      Maximum number of comic to be extracted in each run
-     ```bash
+     
      comic_extract_per_run = 2
-     ```
+     
 
 2. **jet_dwh**
 
