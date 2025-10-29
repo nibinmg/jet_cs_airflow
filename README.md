@@ -41,17 +41,26 @@ Follow these steps to set up the Airflow for the first time:
    cd <your-repo-folder>
    ```
 
-2. **Build docker image**
+2. **Create .env file**
+
+     Create .env file in the Airflow root folder. 
+     Add the following variables for dbt to connect to postgeres from the Airflow container. 
+
+     DBT_HOST= "host.docker.internal" or < IP >
+     DBT_USER= < postgres user name >
+     DBT_PASSWORD= < postgres password > 
+
+3. **Build docker image**
      ```bash
      docker compose build
      ```
 
-3. **Initialize Airflow database**
+4. **Initialize Airflow database**
      ```bash
      docker compose up airflow-init
      ```
 
-4. **Start Airflow services**
+5. **Start Airflow services**
     
     to run the in foreground
      ```bash
@@ -64,7 +73,7 @@ Follow these steps to set up the Airflow for the first time:
 
 Wait till the containers are up. Once up the dags can be viewed from the [Airflow UI](http://localhost:8080/) (username: airflow, password: airflow). 
 
-4. **Other Airflow commands**
+6. **Other Airflow commands**
      
      Stop the airflow
      ```bash
@@ -87,8 +96,8 @@ Wait till the containers are up. Once up the dags can be viewed from the [Airflo
      Connection name: "dwh_postgres"
      connection type: select postgres
      host: "host.docker.internal" or <IP>
-     user: <postgres user name>
-     password: <postgres pwd>
+     user: < postgres user name>
+     password: < postgres pwd>
      database: "jet_db"
 
 ## Lets run the DAGs
@@ -98,10 +107,27 @@ This project includes three Airflow DAGs, each responsible for a specific stage 
 1. **jet_xkcd_daily**
 
 This DAG is scheduled to extract data from the XKCD API every Monday, Wednesday, and Friday.
-The job starts at 6:00 AM and checks for new comics every 10 minutes for the next 6 hours.
+The job starts at 6:00 AM and checks for new comics every 5 minutes for the next 2 hours.
 
 It also supports historical data extraction, although performance is limited in the local setup.
 To avoid long runtimes, the historical fetch is restricted to max two records at a run.
+
+Following variable in the dag can be updated:
+
+     How should the job check for new comic before failure
+     ```bash
+     polling_timeout = 7200
+     ```
+
+     At what interval job check for new comic
+     ```bash
+     polling_interval = 300
+     ```
+
+     Maximum number of comic to be extracted in each run
+     ```bash
+     comic_extract_per_run = 2
+     ```
 
 2. **jet_dwh**
 

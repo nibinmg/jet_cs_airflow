@@ -19,6 +19,10 @@ def jet_dwh():
         else 
             git clone {git_repo} {dbt_dir}
         fi
+        
+        sed -i 's/{{DBT_HOST}}/'"$DBT_HOST"'/g' {dbt_dir}/profiles.yml
+        sed -i 's/{{DBT_USER}}/'"$DBT_USER"'/g' {dbt_dir}/profiles.yml
+        sed -i 's/{{DBT_PASSWORD}}/'"$DBT_PASSWORD"'/g' {dbt_dir}/profiles.yml
         """
     
     @task.bash

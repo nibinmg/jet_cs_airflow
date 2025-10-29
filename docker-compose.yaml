@@ -123,6 +123,8 @@ services:
     restart: always
 
   airflow-apiserver:
+    env_file:
+      - .env
     <<: *airflow-common
     command: api-server
     ports:
@@ -140,6 +142,8 @@ services:
         condition: service_completed_successfully
 
   airflow-scheduler:
+    env_file:
+      - .env
     <<: *airflow-common
     command: scheduler
     healthcheck:
@@ -155,6 +159,8 @@ services:
         condition: service_completed_successfully
 
   airflow-dag-processor:
+    env_file:
+      - .env
     <<: *airflow-common
     command: dag-processor
     healthcheck:
@@ -171,6 +177,8 @@ services:
   
   # nibin - removing celery executor dependency
   airflow-worker:
+    env_file:
+      - .env
     <<: *airflow-common
     command: celery worker
     healthcheck:
@@ -196,6 +204,8 @@ services:
         condition: service_completed_successfully
 
   airflow-triggerer:
+    env_file:
+      - .env
     <<: *airflow-common
     command: triggerer
     healthcheck:
@@ -211,6 +221,8 @@ services:
         condition: service_completed_successfully
 
   airflow-init:
+    env_file:
+      - .env
     <<: *airflow-common
     entrypoint: /bin/bash
     # yamllint disable rule:line-length
@@ -303,6 +315,8 @@ services:
     user: "0:0"
 
   airflow-cli:
+    env_file:
+      - .env
     <<: *airflow-common
     profiles:
       - debug
