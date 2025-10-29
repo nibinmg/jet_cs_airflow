@@ -44,11 +44,17 @@ Follow these steps to set up the Airflow for the first time:
 2. **Create .env file**
 
      Create .env file in the Airflow root folder. 
-     Add the following variables for dbt to connect to postgeres from the Airflow container. 
+     Add the following variables for dbt to connect to DWH(postgres) from the Airflow container. 
+
+     ```bash
 
      DBT_HOST= "host.docker.internal" or < IP >
+
      DBT_USER= < postgres user name >
-     DBT_PASSWORD= < postgres password > 
+
+     DBT_PASSWORD= < postgres password >
+      
+     ```
 
 3. **Build docker image**
      ```bash
